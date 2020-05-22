@@ -1,0 +1,7 @@
+"Format is <NodeID>, <NodeName>, <AdjNode>, <Distance>
+1, Promenade West, 2, 3
+1, Promenade West, 3, 3
+2, Train Station, 1, 3
+2, Train Station, 3, 3
+3, Promenade East, 1, 3
+3, Promenade East, 2, 3
