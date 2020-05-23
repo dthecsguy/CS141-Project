@@ -66,10 +66,10 @@ namespace CS141
 		}
 		public void display()
 		{
-			foreach (string line in connections)
+			/*foreach (string line in connections)
 			{
 				Console.WriteLine(line);
-			}
+			}*/
 			foreach (Node v in allNodes)
 			{
 				Console.WriteLine(v.Name);
