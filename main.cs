@@ -5,6 +5,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Runtime.Intrinsics;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CS141
 {
@@ -16,6 +17,7 @@ namespace CS141
 		public List<Edge> outPaths = new List<Edge>();
 		public List<Edge> inPaths = new List<Edge>();
 		public int dist = 10000;
+		public int prev = -1;
 		public Node() { }
 		public Node(int id, string name)
 		{
@@ -80,7 +82,7 @@ namespace CS141
 			}*/
 			foreach (Node v in allNodes)
 			{
-				Console.WriteLine(v.Name + " : " + v.dist);
+				Console.WriteLine(v.ID + " : " + v.dist + " : " + v.prev);
 			}
 		}
 
@@ -112,7 +114,7 @@ namespace CS141
         }
 
 		//Dijkstra
-		public void calcShortestPath(string start) 
+		public void calcShortestPath(int start) 
         {
 			List<Node> done = new List<Node>(), temp = allNodes;
 			Node v1 = new Node();
@@ -123,7 +125,7 @@ namespace CS141
 
 			foreach (Node v in temp)
             {
-				if (v.Name == start)
+				if (v.ID == start)
 				{
 					v.dist = 0;
 					break;
@@ -142,15 +144,62 @@ namespace CS141
                 {
 					foreach (Node vert in temp)
 						if (vert.ID == other_node(done[done.Count - 1], e).ID)
+						{
 							v3 = vert;
-
+							break;
+						}
 					if (v3.dist > done[done.Count - 1].dist + e.weight)
-						v3.dist = done[done.Count - 1].dist + e.weight;
+					{
+						v3.dist = done[done.Count - 1].dist + e.weight;  //records new distance
+						v3.prev = done[done.Count - 1].ID;				//also previous node
+					}
 				}
             }
 
 			allNodes = done;
 		}
+
+		//to get actual path array, inputs are start ID and finish ID
+		//returns a list of ints
+		public List<int> storeShortestPath(int start, int finish)
+        {
+			Console.WriteLine("Starting Dijkstra Algorithm... ");
+			calcShortestPath(start);
+			Console.WriteLine("Finished Dijkstra Algorithm... ");
+
+			Node finisher = new Node();
+			int check = 0;
+			List<int> path = new List<int>();
+
+			Console.WriteLine("Starting Traceback...");
+			foreach (Node v in allNodes)
+            {
+				if (v.ID == finish)
+                {
+					finisher = v;
+					break;
+                }
+            }
+
+			while (check != -1)
+            {
+				path.Insert(0, finisher.ID);
+
+				foreach (Node v in allNodes)
+				{
+					if (v.ID == finisher.prev)
+					{
+						finisher = v;
+						break;
+					}
+				}
+				check = finisher.prev;
+			}
+
+			path.Insert(0, start);
+
+			return path;
+        }
 		
 		//changes strings to relationships, look at .txt file for format
 		public void parse()
@@ -257,26 +306,16 @@ namespace CS141
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("starting");
-
-			/*Node V1 = new Node();
-			V1.Name = "Downtown";
-			
-			Node V2 = new Node();
-			V2.Name = "Port";
-			
-			Edge E1 = new Edge(V1, V2, 14);*/
-
+			List<int> path = new List<int>();
 			Graph map = new Graph();
+
 			map.collect("connections.txt");
 			map.parse();
-			map.calcShortestPath("Promenade West");
-			map.display();
+			path = map.storeShortestPath(1, 7);
 
+			foreach (int ID in path)
+				Console.Write(ID + ", ");
 
-			/*Console.WriteLine(E1.Nodes[0].Name);
-			Console.WriteLine(E1.Nodes[1].Name);
-			Console.WriteLine(E1.Dist);*/
 			Console.ReadKey();
 		}
 	}
