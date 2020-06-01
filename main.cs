@@ -2,6 +2,9 @@
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using System.ComponentModel;
+using System.Runtime.Intrinsics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace CS141
 {
@@ -12,6 +15,7 @@ namespace CS141
 		public int ID { get; set; }
 		public List<Edge> outPaths = new List<Edge>();
 		public List<Edge> inPaths = new List<Edge>();
+		public int dist = 10000;
 		public Node() { }
 		public Node(int id, string name)
 		{
@@ -50,6 +54,8 @@ namespace CS141
 		private List<string> connections = new List<string>();
 		private List<Node> allNodes = new List<Node>();
 		public void addNode(Node v) { allNodes.Add(v); }
+
+		//makes relationships into graph
 		public int collect(string file)
 		{
 			StreamReader F = new StreamReader(file);
@@ -64,6 +70,8 @@ namespace CS141
 			F.Close();
 			return connections.Count;
 		}
+
+		//displays infformation ... changes often
 		public void display()
 		{
 			/*foreach (string line in connections)
@@ -72,10 +80,78 @@ namespace CS141
 			}*/
 			foreach (Node v in allNodes)
 			{
-				Console.WriteLine(v.Name);
+				Console.WriteLine(v.Name + " : " + v.dist);
 			}
 		}
 
+		//gets other ode on edge
+		private Node other_node(Node v, Edge e)
+        {
+			return e.Nodes[0] == v ? e.Nodes[1] : e.Nodes[0];
+        }
+
+		//finds minimum distance
+		public int findMinD(List<Node> V)
+        {
+			if (V.Count == 1)
+				return 0;
+
+			int lowest = int.MaxValue;
+			int lowestI = int.MaxValue;
+
+			for (int i = 0; i < V.Count; i++)
+            {
+				if (V[i].dist <= lowest)
+                {
+					lowest = V[i].dist;
+					lowestI = i;
+                }
+            }
+
+			return lowestI;
+        }
+
+		//Dijkstra
+		public void calcShortestPath(string start) 
+        {
+			List<Node> done = new List<Node>(), temp = allNodes;
+			Node v1 = new Node();
+			Node v2 = new Node();
+			Node v3 = new Node();
+
+			Console.WriteLine("start: " + start);
+
+			foreach (Node v in temp)
+            {
+				if (v.Name == start)
+				{
+					v.dist = 0;
+					break;
+				}
+				else
+					Console.WriteLine("Nothing was found");
+            }
+
+			while(temp.Count != 0)
+            {
+
+				done.Add(temp[findMinD(temp)]);
+				temp.Remove(temp[findMinD(temp)]);
+
+				foreach (Edge e in done[done.Count-1].outPaths)
+                {
+					foreach (Node vert in temp)
+						if (vert.ID == other_node(done[done.Count - 1], e).ID)
+							v3 = vert;
+
+					if (v3.dist > done[done.Count - 1].dist + e.weight)
+						v3.dist = done[done.Count - 1].dist + e.weight;
+				}
+            }
+
+			allNodes = done;
+		}
+		
 		//changes strings to relationships, look at .txt file for format
 		public void parse()
 		{
@@ -194,6 +270,7 @@ namespace CS141
 			Graph map = new Graph();
 			map.collect("connections.txt");
 			map.parse();
+			map.calcShortestPath("Promenade West");
 			map.display();
 
 
