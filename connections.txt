@@ -1,35 +1,35 @@
 "Format is <NodeID>,<NodeName>,<AdjNode>,<Distance>"
-1,Promenade West,2,3
-1,Promenade West,3,3
-1,Promenade West,42,3
-1,Promenade West,43,3
-2,Train Station,1,3
-2,Train Station,3,3
+1,Promenade West,2,5
+1,Promenade West,3,5
+1,Promenade West,42,5
+1,Promenade West,43,2
+2,Train Station,1,5
+2,Train Station,3,5
 2,Train Station,4,3
-3,Promenade East,1,3
-3,Promenade East,2,3
+3,Promenade East,1,5
+3,Promenade East,2,5
 3,Promenade East,5,3
 3,Promenade East,40,3
-3,Promenade East,41,3
-3,Promenade East,43,3
+3,Promenade East,41,2
+3,Promenade East,43,4
 4,Torsk Bloc,2,3
-4,Torsk Bloc,7,3
-5,Hospital,7,3
-5,Hospital,40,3
+4,Torsk Bloc,7,7
+5,Hospital,7,7
+5,Hospital,40,4
 5,Hospital,3,3
-7,Great Bridge,4,3
-7,Great Bridge,5,3
-40,Gora Bridge,5,3
+7,Great Bridge,4,7
+7,Great Bridge,5,7
+40,Gora Bridge,5,4
 40,Gora Bridge,3,3
-40,Gora Bridge,41,3
-41,Hills,3,3
-41,Hills,40,3
-41,Hills,42,3
-41,Hills,43,3
-42,Spomenik,1,3
-42,Spomenik,41,3
-42,Spomenik,43,3
-43,Hills,1,3
-43,Hills,3,3
-43,Hills,41,3
-43,Hills,42,3
+40,Gora Bridge,41,8
+41,Hills,3,2
+41,Hills,40,8
+41,Hills,42,6
+41,Hills,43,2
+42,Spomenik,1,5
+42,Spomenik,41,6
+42,Spomenik,43,5
+43,Hills,1,2
+43,Hills,3,4
+43,Hills,41,2
+43,Hills,42,5
