@@ -1,4 +1,6 @@
-﻿using System;
+﻿//Code written by Demarcus Sales and Troy Hurst 
+
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +18,7 @@ namespace CS141
 		public int ID { get; set; }
 		public List<Edge> outPaths = new List<Edge>();
 		public List<Edge> inPaths = new List<Edge>();
-		public int dist = 10000;
+		public double dist = 10000;
 		public int prev = -1;
 		public Node() { }
 		public Node(int id, string name)
@@ -30,9 +32,9 @@ namespace CS141
 	class Edge
 	{
 		public Node[] Nodes = new Node[2];
-		public int weight { get; set; }
+		public double weight { get; set; }
 
-		public Edge(Node v1, Node v2, int dist)
+		public Edge(Node v1, Node v2, double dist)
 		{
 			Nodes[0] = v1;
 			Nodes[1] = v2;
@@ -76,10 +78,6 @@ namespace CS141
 		//displays infformation ... changes often
 		public void display()
 		{
-			/*foreach (string line in connections)
-			{
-				Console.WriteLine(line);
-			}*/
 			foreach (Node v in allNodes)
 			{
 				Console.WriteLine(v.ID + " : " + v.dist + " : " + v.prev);
@@ -98,7 +96,7 @@ namespace CS141
 			if (V.Count == 1)
 				return 0;
 
-			int lowest = int.MaxValue;
+			double lowest = int.MaxValue;
 			int lowestI = int.MaxValue;
 
 			for (int i = 0; i < V.Count; i++)
@@ -120,6 +118,7 @@ namespace CS141
 			Node v1 = new Node();
 			Node v2 = new Node();
 			Node v3 = new Node();
+			bool hmm = false;
 
 			Console.WriteLine("start: " + start);
 
@@ -136,23 +135,26 @@ namespace CS141
 
 			while(temp.Count != 0)
             {
-
+				
 				done.Add(temp[findMinD(temp)]);
 				temp.Remove(temp[findMinD(temp)]);
 
 				foreach (Edge e in done[done.Count-1].outPaths)
                 {
-					foreach (Node vert in temp)
+					foreach (Node vert in allNodes)
 						if (vert.ID == other_node(done[done.Count - 1], e).ID)
 						{
 							v3 = vert;
+
+							if (v3.dist > done[done.Count - 1].dist + e.weight)
+							{
+								v3.dist = done[done.Count - 1].dist + e.weight;  //records new distance
+								v3.prev = done[done.Count - 1].ID;              //also previous node
+							}
+							hmm = true;
 							break;
 						}
-					if (v3.dist > done[done.Count - 1].dist + e.weight)
-					{
-						v3.dist = done[done.Count - 1].dist + e.weight;  //records new distance
-						v3.prev = done[done.Count - 1].ID;				//also previous node
-					}
+					
 				}
             }
 
@@ -170,6 +172,7 @@ namespace CS141
 			Node finisher = new Node();
 			int check = 0;
 			List<int> path = new List<int>();
+			bool hmm = false;
 
 			Console.WriteLine("Starting Traceback...");
 			foreach (Node v in allNodes)
@@ -190,16 +193,20 @@ namespace CS141
 					if (v.ID == finisher.prev)
 					{
 						finisher = v;
+						hmm = true;
 						break;
 					}
 				}
+
 				check = finisher.prev;
 			}
 
 			path.Insert(0, start);
 
+			this.clear();
+
 			return path;
-        }
+        } //checked
 		
 		//changes strings to relationships, look at .txt file for format
 		public void parse()
@@ -228,6 +235,7 @@ namespace CS141
 					buffer.Clear();
 
 					int temp;
+					double temp1;
 
 					int.TryParse(info[0], out temp);
 					int tempID = temp;
@@ -235,12 +243,13 @@ namespace CS141
 					int.TryParse(info[2], out temp);
 					int tempV2 = temp;
 
-					int.TryParse(info[3], out temp);
-					int tempDist = temp;
+					double.TryParse(info[3], out temp1);
+					double tempDist = temp1;
 
 					Node v1 = new Node(tempID, info[1]);
 					Node v2 = new Node();
 					v2.ID = tempV2;
+
 					Edge e = new Edge(v1, v2, tempDist);
 					v1.outPaths.Add(e);
 					allNodes.Add(v1);
@@ -263,6 +272,7 @@ namespace CS141
 					buffer.Clear();
 
 					int temp;
+					double temp2;
 
 					int.TryParse(info[0], out temp);
 					int tempID = temp;
@@ -270,8 +280,8 @@ namespace CS141
 					int.TryParse(info[2], out temp);
 					int tempV2 = temp;
 
-					int.TryParse(info[3], out temp);
-					int tempDist = temp;
+					double.TryParse(info[3], out temp2);
+					double tempDist = temp2;
 
 					if (discovered.Contains(tempID))
 					{
@@ -299,7 +309,16 @@ namespace CS141
 
 				}
 			}
-		}
+		}  //checked
+
+		public void clear()
+        {
+			foreach (Node v in allNodes)
+            {
+				v.prev = -1;
+				v.dist = 10000;
+            }
+        }
 	}
 
 	class Program
@@ -312,6 +331,11 @@ namespace CS141
 			map.collect("connections.txt");
 			map.parse();
 			path = map.storeShortestPath(1, 7);
+
+			foreach (int ID in path)
+				Console.Write(ID + ", ");
+
+			path = map.storeShortestPath(17, 35);
 
 			foreach (int ID in path)
 				Console.Write(ID + ", ");
